@@ -7,8 +7,10 @@
 --------------------------------------------------------------------------------
 
 2. Реализация делегирования на div.gallery и получение url большого изображения.
+--------------------------------------------------------------------------------
 
 3. Подключение скрипта и стилей библиотеки модального окна basicLightbox. Используй CDN сервис jsdelivr и добавь в проект ссылки на минифицированные (.min) файлы библиотеки.
+--------------------------------------------------------------------------------
 
 4. Открытие модального окна по клику на элементе галереи. Для этого ознакомься с документацией и примерами.
 
@@ -40,22 +42,22 @@
 import { galleryItems } from "./gallery-items.js";
 
 const galleryContainerEl = document.querySelector(".gallery");
-console.log(galleryContainerEl);
 
-const galleryItemsListMarkup = makeGalleryItemsListMarkup(galleryItems);
+const galleryItemsList = makeGalleryItemsListMarkup(galleryItems);
+galleryContainerEl.insertAdjacentHTML("beforeend", galleryItemsList);
 
-galleryContainerEl.insertAdjacentHTML("beforeend", galleryItemsListMarkup);
+galleryContainerEl.addEventListener("click", onGalleryImageElClick);
 
 function makeGalleryItemsListMarkup(items) {
   return items
     .map(({ preview, original, description }) => {
       return `
     <div class="gallery__item">
-    <a class="gallery__link" href="large-image.jpg">
+    <a class="gallery__link" href="${original}">
     <img
       class="gallery__image"
       src="${preview}"
-      data-source= "${original}"
+      data-source = "${original}"
       alt= "${description}"
     />
   </a>
@@ -63,4 +65,31 @@ function makeGalleryItemsListMarkup(items) {
     `;
     })
     .join("");
+}
+
+// window.removeEventListener("keydown", onEscKeyDownClick);
+
+function onGalleryImageElClick(event) {
+  event.preventDefault();
+
+  const imageAltDescription = event.target.alt;
+  const imageLinkEl = event.target.dataset.source;
+  if (!imageLinkEl) {
+    return;
+  }
+
+  const imageOriginalForShow = basicLightbox.create(
+    `<img src = '${imageLinkEl}', alt='${imageAltDescription}'>`
+  );
+  imageOriginalForShow.show();
+
+  window.addEventListener("keydown", onEscKeyDownClick);
+
+  function onEscKeyDownClick(event) {
+    if (event.code === "Escape") {
+      imageOriginalForShow.close();
+      window.removeEventListener("keydown", onEscKeyDownClick);
+      console.log("not listening to an event");
+    }
+  }
 }
