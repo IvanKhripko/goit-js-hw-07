@@ -67,8 +67,6 @@ function makeGalleryItemsListMarkup(items) {
     .join("");
 }
 
-// window.removeEventListener("keydown", onEscKeyDownClick);
-
 function onGalleryImageElClick(event) {
   event.preventDefault();
 
@@ -78,18 +76,31 @@ function onGalleryImageElClick(event) {
     return;
   }
 
-  const imageOriginalForShow = basicLightbox.create(
-    `<img src = '${imageLinkEl}', alt='${imageAltDescription}'>`
-  );
-  imageOriginalForShow.show();
+  const options = {
+    onShow: () => {
+      window.addEventListener("keydown", onEscKeyDownClick);
+    },
+    onClose: () => {
+      window.removeEventListener("keydown", onEscKeyDownClick);
+    },
+  };
 
-  window.addEventListener("keydown", onEscKeyDownClick);
+  const imageOriginalForShow = basicLightbox.create(
+    `<img src = '${imageLinkEl}', alt='${imageAltDescription}'>`,
+    { options }
+  );
+
+  imageOriginalForShow.show((imageOriginalForShow) => {
+    options.onShow();
+    console.log("повесил");
+  });
 
   function onEscKeyDownClick(event) {
     if (event.code === "Escape") {
-      imageOriginalForShow.close();
-      window.removeEventListener("keydown", onEscKeyDownClick);
-      console.log("not listening to an event");
+      imageOriginalForShow.close((imageOriginalForShow) => {
+        options.onClose();
+        console.log("снял");
+      });
     }
   }
 }
