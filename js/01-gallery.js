@@ -92,14 +92,14 @@ function onGalleryImageElClick(event) {
 
   imageOriginalForShow.show((imageOriginalForShow) => {
     options.onShow();
-    console.log("повесил");
+    // console.log("повесил");
   });
 
   function onEscKeyDownClick(event) {
     if (event.code === "Escape") {
       imageOriginalForShow.close((imageOriginalForShow) => {
         options.onClose();
-        console.log("снял");
+        // console.log("снял");
       });
     }
   }
